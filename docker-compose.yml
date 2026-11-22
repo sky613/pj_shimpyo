@@ -1,0 +1,30 @@
+# 폴더 이동 후에도 기존 volume(shimpyo_*)을 쓰도록 프로젝트 이름 고정
+name: shimpyo
+services:
+  app:
+    build: .
+    container_name: shimpyo-dev
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - expo_cache:/root/.expo
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    environment:
+      # Expo Go on a physical device must reach the host, not the container.
+      # Set HOST_LAN_IP in .env to your Mac's LAN IP (ipconfig getifaddr en0).
+      - REACT_NATIVE_PACKAGER_HOSTNAME=${HOST_LAN_IP:-127.0.0.1}
+      - EXPO_NO_TELEMETRY=1
+      # 이미지 ENV 의 CI=1 을 덮어써서 Metro watch 모드를 켠다
+      - CI=false
+    stdin_open: true
+    tty: true
+    command: npx expo start --host lan
+
+volumes:
+  node_modules:
+  expo_cache:
